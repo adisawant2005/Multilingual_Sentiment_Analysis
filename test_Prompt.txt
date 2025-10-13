@@ -1,0 +1,54 @@
+✅ Improved Prompt (for server)
+
+Here is sampled tweet data about the topic "${topic}" (full dataset has ${rows.length} tweets):
+
+${compactCsv}
+
+Analyze this tweet data and return the result STRICTLY in the following JSON format — no extra text, no markdown.
+
+JSON Schema:
+
+{
+  "summary": "Short overall summary of public sentiment on the topic.",
+  "statistics": {
+    "total_tweets": 0,
+    "positive": 0,
+    "negative": 0,
+    "neutral": 0,
+    "positive_percent": 0.0,
+    "negative_percent": 0.0,
+    "neutral_percent": 0.0,
+    "avg_sentiment_score": 0.0,
+    "top_users_mentioned": ["@user1", "@user2"],
+    "top_hashtags": ["#Trend1", "#TopicKeyword"],
+    "most_active_users": ["@user3", "@user4"]
+  },
+  "trend_analysis": [
+    {
+      "hashtag": "#Trend1",
+      "sentiment": "positive",
+      "mention_count": 120
+    },
+    {
+      "hashtag": "#Trend2",
+      "sentiment": "negative",
+      "mention_count": 85
+    }
+  ],
+  "insights": [
+    "Insight 1: Notable trend or user behavior.",
+    "Insight 2: Any shift in sentiment or unusual pattern."
+  ]
+}
+
+✅ Features Included:
+
+Basic sentiment stats (positive/negative/neutral)
+
+Top hashtags and usernames
+
+Sentiment analysis of trending hashtags
+
+User activity insights
+
+All results structured for easy JSON parsing
