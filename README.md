@@ -26,5 +26,5 @@ It demonstrates how to leverage Gemini's structured output capabilities (JSON Sc
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd <project-folder>
+git clone https://github.com/adisawant2005/Multilingual_Sentiment_Analysis
+cd Multilingual_Sentiment_Analysis
