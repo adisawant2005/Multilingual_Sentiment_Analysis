@@ -81,124 +81,124 @@ async function translateText(text, targetLanguage) {
 
 
 // Route for general chat
-app.get('/gemini', async (req, res) => {
-  try {
-    const query = req.query.query;
-    if (!query) {
-      return res.status(400).json({ error: 'Please provide a query' });
-    }
+// app.get('/gemini', async (req, res) => {
+//   try {
+//     const query = req.query.query;
+//     if (!query) {
+//       return res.status(400).json({ error: 'Please provide a query' });
+//     }
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [
-        {
-          parts: [{ text: query }],
-        },
-      ],
-    });
-    res.json({ text: response.text });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
-});
+//     const response = await ai.models.generateContent({
+//       model: 'gemini-2.5-flash',
+//       contents: [
+//         {
+//           parts: [{ text: query }],
+//         },
+//       ],
+//     });
+//     res.json({ text: response.text });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 
-// Define a route to trigger the analysis of the local CSV file
-app.get('/count-sentiment-india-csv', async (req, res) => {
-  try {
-    const csvFilePath = './India.csv';
-    const { rows, sampleRows } = await parseCsv(csvFilePath, START_INDEX, MAX_ROWS);
+// // Define a route to trigger the analysis of the local CSV file
+// app.get('/count-sentiment-india-csv', async (req, res) => {
+//   try {
+//     const csvFilePath = './India.csv';
+//     const { rows, sampleRows } = await parseCsv(csvFilePath, START_INDEX, MAX_ROWS);
 
-    const prompt = [
-      {
-        parts: [
-          {
-            text: `Here is sampled data from India.csv (full dataset has ${rows.length} rows):
+//     const prompt = [
+//       {
+//         parts: [
+//           {
+//             text: `Here is sampled data from India.csv (full dataset has ${rows.length} rows):
 
-${sampleRows.map((row) => Object.values(row).join(',')).join('\n')}
+// ${sampleRows.map((row) => Object.values(row).join(',')).join('\n')}
 
-Count the number of positive, negative, and neutral tweets in the dataset and return the result in the following JSON format:
+// Count the number of positive, negative, and neutral tweets in the dataset and return the result in the following JSON format:
 
-{
-  "positive": 0,
-  "negative": 0,
-  "neutral": 0,
-  "positive_percent": 0.0,
-  "negative_percent": 0.0,
-  "neutral_percent": 0.0
-}`,
-          },
-        ],
-      },
-    ];
+// {
+//   "positive": 0,
+//   "negative": 0,
+//   "neutral": 0,
+//   "positive_percent": 0.0,
+//   "negative_percent": 0.0,
+//   "neutral_percent": 0.0
+// }`,
+//           },
+//         ],
+//       },
+//     ];
 
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: 'object',
-          properties: {
-            positive: {
-              type: 'number',
-              description: 'Number of positive tweets.',
-            },
-            negative: {
-              type: 'number',
-              description: 'Number of negative tweets.',
-            },
-            neutral: {
-              type: 'number',
-              description: 'Number of neutral tweets.',
-            },
-            positive_percent: {
-              type: 'number',
-              description: 'Percentage of positive tweets.',
-            },
-            negative_percent: {
-              type: 'number',
-              description: 'Percentage of negative tweets.',
-            },
-            neutral_percent: {
-              type: 'number',
-              description: 'Percentage of neutral tweets.',
-            },
-          },
-          required: ['positive', 'negative', 'neutral', 'positive_percent', 'negative_percent', 'neutral_percent'],
-          additionalProperties: false,
-        },
-      },
-    });
+//     const result = await ai.models.generateContent({
+//       model: 'gemini-2.5-flash',
+//       contents: prompt,
+//       config: {
+//         responseMimeType: 'application/json',
+//         responseSchema: {
+//           type: 'object',
+//           properties: {
+//             positive: {
+//               type: 'number',
+//               description: 'Number of positive tweets.',
+//             },
+//             negative: {
+//               type: 'number',
+//               description: 'Number of negative tweets.',
+//             },
+//             neutral: {
+//               type: 'number',
+//               description: 'Number of neutral tweets.',
+//             },
+//             positive_percent: {
+//               type: 'number',
+//               description: 'Percentage of positive tweets.',
+//             },
+//             negative_percent: {
+//               type: 'number',
+//               description: 'Percentage of negative tweets.',
+//             },
+//             neutral_percent: {
+//               type: 'number',
+//               description: 'Percentage of neutral tweets.',
+//             },
+//           },
+//           required: ['positive', 'negative', 'neutral', 'positive_percent', 'negative_percent', 'neutral_percent'],
+//           additionalProperties: false,
+//         },
+//       },
+//     });
 
-    const responseText = result.text;
-    console.log('Raw response from Gemini:', responseText); // Debug log
+//     const responseText = result.text;
+//     console.log('Raw response from Gemini:', responseText); // Debug log
 
-    if (!responseText) {
-      return res.status(500).json({
-        error: 'Gemini returned empty response.',
-        result: JSON.stringify(result, null, 2),
-      });
-    }
+//     if (!responseText) {
+//       return res.status(500).json({
+//         error: 'Gemini returned empty response.',
+//         result: JSON.stringify(result, null, 2),
+//       });
+//     }
 
-    let sentimentCounts;
-    try {
-      sentimentCounts = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse JSON response:', responseText);
-      return res.status(500).json({
-        error: 'Gemini returned invalid JSON format.',
-        geminiResponse: responseText,
-        parseError: parseError.message,
-      });
-    }
+//     let sentimentCounts;
+//     try {
+//       sentimentCounts = JSON.parse(responseText);
+//     } catch (parseError) {
+//       console.error('Failed to parse JSON response:', responseText);
+//       return res.status(500).json({
+//         error: 'Gemini returned invalid JSON format.',
+//         geminiResponse: responseText,
+//         parseError: parseError.message,
+//       });
+//     }
 
-    res.json(sentimentCounts);
-  } catch (error) {
-    handleError(res, error);
-  }
-});
+//     res.json(sentimentCounts);
+//   } catch (error) {
+//     handleError(res, error);
+//   }
+// });
 
 
 /**
@@ -226,7 +226,8 @@ app.get('/analyze-multiple-tweets-sentiment', async (req, res) => {
             {
                 parts: [
                     {
-                        text: `**Role:** You are a **proud Indian diplomat** and a multilingual sentiment analysis expert. Your classification must reflect an informed, nuanced perspective focused on **national interest, cultural pride, and constructive commentary**.
+                        text: `**Role:** You are a **proud Indian** and a multilingual sentiment analysis expert. Your classification must reflect an informed, nuanced perspective focused on **national interest, cultural pride, and constructive commentary**.
+**CRITICAL CONSTRAINT: Do not return all 3s. The score distribution must reflect genuine positive and negative sentiment based on the rules and examples provided.**
 
 Analyze the sentiment for each of the ${totalSampledTweets} tweets provided below, regardless of the language.
 
@@ -234,17 +235,33 @@ Analyze the sentiment for each of the ${totalSampledTweets} tweets provided belo
 
 - **5 (STRONGLY POSITIVE):** Clear excitement, strong support, emphatic praise, or clear national pride/celebration.
 - **4 (SLIGHTLY POSITIVE):** Expresses mild approval, light optimism, satisfaction, or a subtle celebration.
-- **3 (NEUTRAL/FACTUAL):** **USE SPARINGLY.** Only classify as 3 if the tweet is purely **factual reporting** (e.g., an announcement, a non-opinionated link share) AND contains absolutely no implied or expressed opinion.
+- **3 (NEUTRAL/INDETERMINATE): STRICTLY USE ONLY IF:** The tweet is a simple, non-editorialized announcement or purely data-driven factual statement. If you sense any trace of approval, dissatisfaction, or implied political/cultural stance, DO NOT use 3.
 - **2 (SLIGHTLY NEGATIVE):** Expresses mild concern, constructive criticism, or minor dissatisfaction.
 - **1 (STRONGLY NEGATIVE):** Clear outrage, strong condemnation, significant fear, or deep pessimism.
 
+**FEW-SHOT EXAMPLES (MUST FOLLOW THIS SCORING LOGIC):**
+ID: X1 | TEXT: The inauguration of the new highway is a major step forward for connectivity! -> SCORE: 5
+ID: X2 | TEXT: The new tax policy seems a bit confusing, will it affect small businesses? -> SCORE: 2
+ID: X3 | TEXT: Today, PM Modi met with global leaders at the G20 summit in Delhi. -> SCORE: 3
+ID: X4 | TEXT: Very disappointing to see the poor sanitation in my city's public park. Needs urgent attention. -> SCORE: 1
+ID: X5 | TEXT: Feeling good about the upcoming reforms; a step in the right direction. -> SCORE: 4
+
 Return ONLY a single JSON object containing an array of results. The output must adhere strictly to the provided JSON Schema.
+
+**Example JSON Structure (MUST be followed):**
+{
+  "sentiments": [
+    { "id": "X1", "sentiment_score": 5 },
+    { "id": "X2", "sentiment_score": 2 }
+    // ... all 100 results must follow this pattern
+  ]
+}
 
 Tweet Data (ID | TEXT):
 ---
 ${tweetDataString}
 ---`,
-                    },
+                    },,
                 ],
             },
         ];
@@ -282,7 +299,7 @@ ${tweetDataString}
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {
-                temperature: 0.1, 
+                temperature: 0.3, 
                 responseMimeType: 'application/json',
                 responseSchema: multiSentimentSchema, // Use the corrected schema
             },
@@ -307,9 +324,38 @@ ${tweetDataString}
             });
         }
 
+        const analysisSummary = {
+            1: { count: 0, percentage: 0 },
+            2: { count: 0, percentage: 0 },
+            3: { count: 0, percentage: 0 },
+            4: { count: 0, percentage: 0 },
+            5: { count: 0, percentage: 0 }
+        };
+
+        const sentiments = sentimentResults.sentiments || [];
+        const actualCount = sentiments.length;
+
+        if (actualCount > 0) {
+            // 5a. Calculate the count for each score
+            sentiments.forEach(item => {
+                const score = item.sentiment_score;
+                if (score >= 1 && score <= 5) {
+                    analysisSummary[score].count += 1;
+                }
+            });
+
+            // 5b. Calculate the percentage for each score
+            for (const score in analysisSummary) {
+                const count = analysisSummary[score].count;
+                // Round percentage to 2 decimal places
+                analysisSummary[score].percentage = parseFloat(((count / actualCount) * 100).toFixed(2));
+            }
+        }
+
         res.json({
-            count: totalSampledTweets,
-            ...sentimentResults 
+            count: actualCount, // Use the actual count of results
+            summary: analysisSummary, 
+            results: sentiments // Rename for clarity
         });
 
     } catch (error) {
